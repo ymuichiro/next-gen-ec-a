@@ -11,7 +11,7 @@ interface Message {
   products?: Product[];
   timestamp: Date;
   showAsGrid?: boolean;
-  imageUrl?: string; // 画像URLを追加
+  imageUrl?: string[];
 }
 
 interface ChatMessageProps {
@@ -19,7 +19,7 @@ interface ChatMessageProps {
   isMobile?: boolean;
 }
 
-function ProductSuggestionCard({ product, isMobile = false }: { product: Product; isMobile?: boolean }) {
+function ProductSuggestionCard({ product, isMobile = false }: { product: Product; isMobile?: boolean; }) {
   return (
     <div
       className={cn(
@@ -82,16 +82,19 @@ export function ChatMessage({ message, isMobile = false }: ChatMessageProps) {
         )}
         <div>
           <p className={cn("whitespace-pre-line", isMobile ? "text-sm" : "text-sm")}>{message.text}</p>
-          {/* 画像が表示される場合 */}
-          {message.imageUrl && (
-            <div className="mt-2">
-              <Image
-                src={message.imageUrl || "/placeholder.svg"}
-                alt="添付画像"
-                width={200}
-                height={150}
-                className="rounded-lg object-cover max-w-full h-auto"
-              />
+          {/* 画像が表示される場合（複数対応） */}
+          {message.imageUrl && message.imageUrl.length > 0 && (
+            <div className="mt-2 flex flex-wrap gap-2">
+              {message.imageUrl.map((url, idx) => (
+                <Image
+                  key={url + idx}
+                  src={url || "/placeholder.svg"}
+                  alt="添付画像"
+                  width={200}
+                  height={150}
+                  className="rounded-lg object-cover max-w-full h-auto"
+                />
+              ))}
             </div>
           )}
           {message.products && message.products.length > 0 && !message.showAsGrid && (
