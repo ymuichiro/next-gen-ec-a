@@ -4,9 +4,9 @@ import type React from "react";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "v0 App",
-  description: "Created with v0",
-  generator: "v0.dev",
+  title: "Next Gen EC",
+  description: "Next Gen EC",
+  generator: "Next Gen EC",
 };
 
 export default function RootLayout({
