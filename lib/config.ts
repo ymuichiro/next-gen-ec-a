@@ -1,8 +1,8 @@
-import { z } from 'zod';
+import { z } from "zod";
 
 // .env で管理する環境変数のスキーマ定義
 const envSchema = z.object({
-  NODE_ENV: z.enum(['development', 'test', 'production']),
+  NODE_ENV: z.enum(["development", "test", "production"]),
   DATABASE_URL: z.string().url(),
   COSMOS_DB_ENDPOINT: z.string().url(),
   COSMOS_DB_KEY: z.string(),

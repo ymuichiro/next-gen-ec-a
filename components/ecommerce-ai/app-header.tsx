@@ -1,18 +1,18 @@
-"use client"
+"use client";
 
-import Link from "next/link"
-import { ShoppingCart, UserCircle, Zap } from "lucide-react"
-import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
-import { useState } from "react"
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { ShoppingCart, UserCircle, Zap } from "lucide-react";
+import Link from "next/link";
+import { useState } from "react";
 
 export function AppHeader() {
-  const cartItemCount = 3
-  const [isMenuOpen, setIsMenuOpen] = useState(false)
+  const cartItemCount = 3;
+  const [_isMenuOpen, _setIsMenuOpen] = useState(false);
 
   return (
     <header className="fixed top-0 left-0 right-0 z-50 glass-morphism dark:glass-morphism-dark">
-      <div className="container mx-auto px-3 lg:px-4 h-14 lg:h-16 flex items-center justify-between">
+      <div className="mx-auto px-3 lg:px-4 h-14 lg:h-16 flex items-center justify-between">
         {/* ロゴ */}
         <Link
           href="/"
@@ -94,5 +94,5 @@ export function AppHeader() {
         </div>
       </div>
     </header>
-  )
+  );
 }

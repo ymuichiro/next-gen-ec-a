@@ -1,12 +1,12 @@
-"use client"
+"use client";
 
-import { AppHeader } from "@/components/ecommerce-ai/app-header"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
-import { Separator } from "@/components/ui/separator"
-import Image from "next/image"
-import Link from "next/link"
-import { ShoppingBag, ArrowLeft } from "lucide-react"
+import { AppHeader } from "@/components/ecommerce-ai/app-header";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { Separator } from "@/components/ui/separator";
+import { ArrowLeft, ShoppingBag } from "lucide-react";
+import Image from "next/image";
+import Link from "next/link";
 
 // モックカートアイテムデータ
 const mockCartItems = [
@@ -37,12 +37,12 @@ const mockCartItems = [
     imageUrl: "/placeholder.svg?width=100&height=100",
     quantity: 2,
   },
-]
+];
 
 export default function CartPage() {
-  const subtotal = mockCartItems.reduce((sum, item) => sum + item.price * item.quantity, 0)
-  const shipping = 5.0 // 仮の送料
-  const total = subtotal + shipping
+  const subtotal = mockCartItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
+  const shipping = 5.0; // 仮の送料
+  const total = subtotal + shipping;
 
   return (
     <div className="min-h-screen mist-background dark:mist-background-dark flex flex-col">
@@ -86,16 +86,18 @@ export default function CartPage() {
                     <div className="flex-grow">
                       <h3 className="font-semibold text-lg">{item.name}</h3>
                       <p className="text-slate-600 dark:text-slate-300 text-sm">
-                        {new Intl.NumberFormat("en-US", { style: "currency", currency: item.currency }).format(
-                          item.price,
-                        )}{" "}
+                        {new Intl.NumberFormat("en-US", {
+                          style: "currency",
+                          currency: item.currency,
+                        }).format(item.price)}{" "}
                         x {item.quantity}
                       </p>
                     </div>
                     <div className="font-bold text-lg">
-                      {new Intl.NumberFormat("en-US", { style: "currency", currency: item.currency }).format(
-                        item.price * item.quantity,
-                      )}
+                      {new Intl.NumberFormat("en-US", {
+                        style: "currency",
+                        currency: item.currency,
+                      }).format(item.price * item.quantity)}
                     </div>
                   </div>
                 ))}
@@ -104,18 +106,29 @@ export default function CartPage() {
                   <div className="flex justify-between text-slate-700 dark:text-slate-200">
                     <span>小計:</span>
                     <span>
-                      {new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" }).format(subtotal)}
+                      {new Intl.NumberFormat("en-US", {
+                        style: "currency",
+                        currency: "USD",
+                      }).format(subtotal)}
                     </span>
                   </div>
                   <div className="flex justify-between text-slate-700 dark:text-slate-200">
                     <span>送料:</span>
                     <span>
-                      {new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" }).format(shipping)}
+                      {new Intl.NumberFormat("en-US", {
+                        style: "currency",
+                        currency: "USD",
+                      }).format(shipping)}
                     </span>
                   </div>
                   <div className="flex justify-between font-bold text-xl text-slate-900 dark:text-slate-50">
                     <span>合計:</span>
-                    <span>{new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" }).format(total)}</span>
+                    <span>
+                      {new Intl.NumberFormat("en-US", {
+                        style: "currency",
+                        currency: "USD",
+                      }).format(total)}
+                    </span>
                   </div>
                 </div>
               </>
@@ -133,5 +146,5 @@ export default function CartPage() {
         </Card>
       </main>
     </div>
-  )
+  );
 }

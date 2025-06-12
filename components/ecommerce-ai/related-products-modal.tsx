@@ -1,30 +1,30 @@
-"use client"
+"use client";
 
-import { useState, useEffect } from "react"
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
-import { AlertCircle, Loader2 } from "lucide-react"
-import type { Product, SimilarProductSuggestion } from "@/lib/types"
-import Image from "next/image"
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import type { Product, SimilarProductSuggestion } from "@/lib/types";
+import { AlertCircle, Loader2 } from "lucide-react";
+import Image from "next/image";
+import { useEffect, useState } from "react";
 
 interface RelatedProductsModalProps {
-  isOpen: boolean
-  onOpenChange: (isOpen: boolean) => void
-  sourceProduct: Product | null
+  isOpen: boolean;
+  onOpenChange: (isOpen: boolean) => void;
+  sourceProduct: Product | null;
 }
 
 export function RelatedProductsModal({ isOpen, onOpenChange, sourceProduct }: RelatedProductsModalProps) {
-  const [similarProducts, setSimilarProducts] = useState<SimilarProductSuggestion[]>([])
-  const [isLoading, setIsLoading] = useState(false)
-  const [error, setError] = useState<string | null>(null)
+  const [similarProducts, setSimilarProducts] = useState<SimilarProductSuggestion[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     if (isOpen && sourceProduct) {
       const fetchSimilarProducts = async () => {
-        setIsLoading(true)
-        setError(null)
-        setSimilarProducts([])
+        setIsLoading(true);
+        setError(null);
+        setSimilarProducts([]);
         try {
           const response = await fetch("/api/ai/find-similar", {
             method: "POST",
@@ -33,23 +33,23 @@ export function RelatedProductsModal({ isOpen, onOpenChange, sourceProduct }: Re
               productName: sourceProduct.name,
               productDescription: sourceProduct.description,
             }),
-          })
+          });
           if (!response.ok) {
-            const errorData = await response.json()
-            throw new Error(errorData.error || `API Error: ${response.statusText}`)
+            const errorData = await response.json();
+            throw new Error(errorData.error || `API Error: ${response.statusText}`);
           }
-          const data = await response.json()
-          setSimilarProducts(data.similarProducts || [])
+          const data = await response.json();
+          setSimilarProducts(data.similarProducts || []);
         } catch (err) {
-          setError(err instanceof Error ? err.message : "An unknown error occurred.")
-          console.error("Failed to fetch similar products:", err)
+          setError(err instanceof Error ? err.message : "An unknown error occurred.");
+          console.error("Failed to fetch similar products:", err);
         } finally {
-          setIsLoading(false)
+          setIsLoading(false);
         }
-      }
-      fetchSimilarProducts()
+      };
+      fetchSimilarProducts();
     }
-  }, [isOpen, sourceProduct])
+  }, [isOpen, sourceProduct]);
 
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
@@ -115,5 +115,5 @@ export function RelatedProductsModal({ isOpen, onOpenChange, sourceProduct }: Re
         </div>
       </DialogContent>
     </Dialog>
-  )
+  );
 }

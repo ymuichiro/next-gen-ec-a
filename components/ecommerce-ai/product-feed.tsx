@@ -1,18 +1,18 @@
-import { mockProductPosts } from "@/lib/mock-data"
-import type { EnrichedProductPost } from "@/lib/types"
-import { ProductPostCard } from "./product-post-card"
-import { SearchBar } from "./search-bar"
-import { FilterBar } from "./filter-bar"
+import { mockProductPosts } from "@/lib/mock-data";
+import type { EnrichedProductPost } from "@/lib/types";
+import { FilterBar } from "./filter-bar";
+import { ProductPostCard } from "./product-post-card";
+import { SearchBar } from "./search-bar";
 
 export function ProductFeed() {
-  const posts: EnrichedProductPost[] = mockProductPosts
+  const posts: EnrichedProductPost[] = mockProductPosts;
 
   if (!posts || posts.length === 0) {
     return (
       <div className="flex justify-center items-center min-h-[300px] w-full py-8 px-4">
         <p className="text-slate-500 dark:text-slate-400">表示する投稿が現在ありません。</p>
       </div>
-    )
+    );
   }
 
   return (
@@ -32,9 +32,9 @@ export function ProductFeed() {
         className="
         grid
         grid-cols-1        /* モバイル: 1列 */
-        sm:grid-cols-2     /* 小画面: 2列 */
-        lg:grid-cols-3     /* 大画面: 3列 */
-        xl:grid-cols-4     /* 超大画面: 4列 */
+        md:grid-cols-2     /* 小画面: 2列 */
+        xl:grid-cols-3     /* 大画面: 3列 */
+        2xl:grid-cols-4     /* 超大画面: 4列 */
         gap-3 lg:gap-6     /* モバイルでギャップを小さく */
         px-1 lg:px-2
       "
@@ -46,10 +46,6 @@ export function ProductFeed() {
           </div>
         ))}
       </div>
-
-      <div className="text-center py-6 lg:py-8">
-        <p className="text-slate-500 dark:text-slate-400 text-sm lg:text-base">現在のフィードはここまでです！</p>
-      </div>
     </div>
-  )
+  );
 }

@@ -1,6 +1,6 @@
-import { Input } from "@/components/ui/input"
-import { Button } from "@/components/ui/button"
-import { Search } from "lucide-react"
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Search } from "lucide-react";
 
 export function SearchBar() {
   return (
@@ -20,5 +20,5 @@ export function SearchBar() {
         <Search className="h-5 w-5" />
       </Button>
     </div>
-  )
+  );
 }

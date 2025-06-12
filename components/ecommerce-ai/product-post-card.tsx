@@ -1,30 +1,30 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import Image from "next/image"
-import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { ThumbsUp, Search, ShoppingBag, MoreHorizontal } from "lucide-react"
-import type { EnrichedProductPost, Product } from "@/lib/types"
-import { UserAvatarWithTrust } from "./user-avatar-with-trust"
-import { RelatedProductsModal } from "./related-products-modal"
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import type { EnrichedProductPost, Product } from "@/lib/types";
+import { MoreHorizontal, Search, ShoppingBag, ThumbsUp } from "lucide-react";
+import Image from "next/image";
+import { useState } from "react";
+import { RelatedProductsModal } from "./related-products-modal";
+import { UserAvatarWithTrust } from "./user-avatar-with-trust";
 
 interface ProductPostCardProps {
-  post: EnrichedProductPost
+  post: EnrichedProductPost;
 }
 
 export function ProductPostCard({ post }: ProductPostCardProps) {
-  const [isModalOpen, setIsModalOpen] = useState(false)
-  const [selectedProductForModal, setSelectedProductForModal] = useState<Product | null>(null)
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedProductForModal, setSelectedProductForModal] = useState<Product | null>(null);
 
   const handleFindSimilar = () => {
-    setSelectedProductForModal(post.product)
-    setIsModalOpen(true)
-  }
+    setSelectedProductForModal(post.product);
+    setIsModalOpen(true);
+  };
 
-  const [liked, setLiked] = useState(false)
-  const handleLike = () => setLiked(!liked)
+  const [liked, setLiked] = useState(false);
+  const handleLike = () => setLiked(!liked);
 
   return (
     <>
@@ -43,27 +43,47 @@ export function ProductPostCard({ post }: ProductPostCardProps) {
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="glass-morphism dark:glass-morphism-dark rounded-lg">
-              <DropdownMenuItem
+              <button
+                type="button"
+                className="hover:bg-white/20 dark:hover:bg-white/10 text-sm text-slate-700 dark:text-slate-200 w-full text-left px-2 py-1.5 rounded-md"
                 onClick={() => alert("Share action!")}
-                className="hover:bg-white/20 dark:hover:bg-white/10 text-sm text-slate-700 dark:text-slate-200"
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" || e.key === " ") {
+                    e.preventDefault();
+                    alert("Share action!");
+                  }
+                }}
               >
                 共有する
-              </DropdownMenuItem>
-              <DropdownMenuItem
+              </button>
+              <button
+                type="button"
+                className="hover:bg-white/20 dark:hover:bg-white/10 text-sm text-slate-700 dark:text-slate-200 w-full text-left px-2 py-1.5 rounded-md"
                 onClick={() => alert("Report action!")}
-                className="hover:bg-white/20 dark:hover:bg-white/10 text-sm text-slate-700 dark:text-slate-200"
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" || e.key === " ") {
+                    e.preventDefault();
+                    alert("Report action!");
+                  }
+                }}
               >
                 報告する
-              </DropdownMenuItem>
+              </button>
             </DropdownMenuContent>
           </DropdownMenu>
         </CardHeader>
-
-        {/* 商品画像 */}
+        {/* 商品画像 */}-
         {post.product.imageUrl && (
-          <div
-            className="relative w-full bg-white/10 dark:bg-white/5 cursor-pointer"
+          <button
+            type="button"
+            className="relative w-full bg-white/10 dark:bg-white/5 cursor-pointer p-0 border-none"
             onClick={() => alert(`View product: ${post.product.name}`)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" || e.key === " ") {
+                e.preventDefault();
+                alert(`View product: ${post.product.name}`);
+              }
+            }}
           >
             <Image
               src={post.product.imageUrl || "/placeholder.svg"}
@@ -75,22 +95,27 @@ export function ProductPostCard({ post }: ProductPostCardProps) {
               priority={post.id === "post1"}
               className="opacity-95"
             />
-          </div>
+          </button>
         )}
-
         {/* コンテンツ - モバイルでパディング調整 */}
         <CardContent className="p-2 lg:p-3 flex-grow">
-          <h3
-            className="text-sm lg:text-base font-semibold text-slate-800 dark:text-slate-100 mb-1 cursor-pointer hover:text-blue-700 dark:hover:text-blue-300"
+          <button
+            type="button"
+            className="text-sm lg:text-base font-semibold text-slate-800 dark:text-slate-100 mb-1 cursor-pointer hover:text-blue-700 dark:hover:text-blue-300 bg-transparent border-none p-0 text-left w-full"
             onClick={() => alert(`View product: ${post.product.name}`)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" || e.key === " ") {
+                e.preventDefault();
+                alert(`View product: ${post.product.name}`);
+              }
+            }}
           >
             {post.product.name}
-          </h3>
+          </button>
           {post.caption && (
             <p className="text-xs text-slate-600 dark:text-slate-300 line-clamp-2 mb-2">{post.caption}</p>
           )}
         </CardContent>
-
         {/* フッター - モバイルでボタンサイズ調整 */}
         <CardFooter className="p-2 lg:p-3 flex justify-between items-center border-t border-white/20 dark:border-white/10 mt-auto">
           <div className="flex items-center gap-0.5 lg:gap-1">
@@ -140,5 +165,5 @@ export function ProductPostCard({ post }: ProductPostCardProps) {
         />
       )}
     </>
-  )
+  );
 }
