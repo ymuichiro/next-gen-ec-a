@@ -1,9 +1,10 @@
 "use client";
 
+import { Button } from "@/components/ui/button";
 import { useChatSubmit } from "@/hooks/use-chat-submit";
 import { useVoiceInput } from "@/hooks/use-voice-input";
 import { cn } from "@/lib/utils";
-import { ShoppingBag } from "lucide-react";
+import { MessageCirclePlus } from "lucide-react";
 import { useEffect, useRef } from "react";
 import { ChatMessage } from "./chat-message";
 import { MultiModalInput } from "./multi-modal-input";
@@ -22,6 +23,7 @@ export function ChatInterface({ isMobile = false }: ChatInterfaceProps) {
     onSubmit,
     handleFileSelect,
     attachments,
+    resetChat,
   } = useChatSubmit();
   const { onVoiceClick } = useVoiceInput({ setInput });
 
@@ -53,9 +55,22 @@ export function ChatInterface({ isMobile = false }: ChatInterfaceProps) {
           >
             AI Shopping Assistant
           </h2>
-          <ShoppingBag
-            className={cn("text-blue-600 dark:text-blue-400", isMobile ? "h-6 w-6" : "h-4 w-4 lg:h-5 lg:w-5")}
-          />
+          <div className="flex items-center gap-2">
+            <Button
+              variant="secondary"
+              size={isMobile ? "xs" : "sm"}
+              className={cn(
+                "text-blue-600 dark:text-blue-400 hover:bg-white/20 dark:hover:bg-white/10",
+                isMobile ? "text-xs" : "text-xs"
+              )}
+              onClick={resetChat}
+              type="button"
+              aria-label="新規スレッド"
+            >
+              <MessageCirclePlus className={cn(isMobile ? "h-5 w-5" : "h-5 w-5 lg:h-5 lg:w-5")} />
+            </Button>
+
+          </div>
         </div>
       </header>
 

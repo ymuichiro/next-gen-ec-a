@@ -24,6 +24,14 @@ export function useChatSubmit() {
   const [attachments, setAttachments] = useState<string[]>([]);
   const [isSending, setIsSending] = useState(false);
 
+  // チャットリセット用の初期メッセージ
+  const initialMessage: Message = {
+    id: "initial-ai-message",
+    sender: "ai",
+    text: "こんにちは！ AIショッピングアシスタントです。どのようなお手伝いができますか？",
+    timestamp: new Date(),
+  };
+
   const handleFileSelect = async (event: React.ChangeEvent<HTMLInputElement>) => {
     if (isSending) {
       return;
@@ -133,6 +141,19 @@ export function useChatSubmit() {
     }
   };
 
+  // チャットリセット関数
+  const resetChat = () => {
+    setMessages([
+      {
+        ...initialMessage,
+        timestamp: new Date(), // リセット時に時刻を更新
+      },
+    ]);
+    setInput("");
+    setAttachments([]);
+    toast.success("新しいスレッドを開始しました");
+  };
+
   return {
     messages,
     setMessages,
@@ -143,5 +164,6 @@ export function useChatSubmit() {
     onSubmit,
     isSending,
     handleFileSelect,
+    resetChat, // 追加
   };
 }
