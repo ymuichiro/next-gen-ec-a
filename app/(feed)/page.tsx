@@ -1,6 +1,6 @@
-import { ProductFeed } from "@/components/ecommerce-ai/product-feed"
-import { ChatInterface } from "@/components/ecommerce-ai/chat-interface"
-import { MobileChatFAB } from "@/components/ecommerce-ai/mobile-chat-fab"
+import { ChatInterface } from "@/components/ecommerce-ai/chat-interface";
+import { MobileChatFAB } from "@/components/ecommerce-ai/mobile-chat-fab";
+import { ProductFeed } from "@/components/ecommerce-ai/product-feed";
 
 export default function SocialCommercePage() {
   return (
@@ -21,7 +21,7 @@ export default function SocialCommercePage() {
       {/* モバイルレイアウト */}
       <div className="lg:hidden h-[calc(100vh-3.5rem)] overflow-hidden">
         {/* 商品フィードのみ表示 */}
-        <div className="w-full h-full overflow-y-auto">
+        <div className="w-full h-full overflow-y-auto px-2 sm:px-2">
           <ProductFeed />
         </div>
 
@@ -29,5 +29,5 @@ export default function SocialCommercePage() {
         <MobileChatFAB />
       </div>
     </>
-  )
+  );
 }

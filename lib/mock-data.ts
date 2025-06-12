@@ -1,4 +1,4 @@
-import type { User, Product, EnrichedProductPost } from "./types"
+import type { EnrichedProductPost, Product, User } from "./types";
 
 export const mockUsers: User[] = [
   {
@@ -22,7 +22,7 @@ export const mockUsers: User[] = [
     avatarUrl: "/placeholder.svg?width=40&height=40",
     trustScore: 78,
   },
-]
+];
 
 export const mockProducts: Product[] = [
   {
@@ -57,7 +57,7 @@ export const mockProducts: Product[] = [
     currency: "USD",
     imageUrl: "/placeholder.svg?width=600&height=400",
   },
-]
+];
 
 export const mockProductPosts: EnrichedProductPost[] = [
   {
@@ -108,4 +108,4 @@ export const mockProductPosts: EnrichedProductPost[] = [
     likes: 75,
     commentsCount: 5,
   },
-]
+];

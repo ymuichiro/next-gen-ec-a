@@ -1,12 +1,12 @@
-"use client"
+"use client";
 
-import { AppHeader } from "@/components/ecommerce-ai/app-header"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Separator } from "@/components/ui/separator"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import Link from "next/link"
-import { UserCircle, Mail, CreditCard, ArrowLeft } from "lucide-react"
+import { AppHeader } from "@/components/ecommerce-ai/app-header";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Separator } from "@/components/ui/separator";
+import { ArrowLeft, CreditCard, Mail, UserCircle } from "lucide-react";
+import Link from "next/link";
 
 // モックユーザーデータ
 const mockUserProfile = {
@@ -19,7 +19,7 @@ const mockUserProfile = {
     last4: "4242",
     expiry: "12/2025",
   },
-}
+};
 
 export default function ProfilePage() {
   const getInitials = (name: string) => {
@@ -27,8 +27,8 @@ export default function ProfilePage() {
       .split(" ")
       .map((n) => n[0])
       .join("")
-      .toUpperCase()
-  }
+      .toUpperCase();
+  };
 
   return (
     <div className="min-h-screen mist-background dark:mist-background-dark flex flex-col">
@@ -99,5 +99,5 @@ export default function ProfilePage() {
         </Card>
       </main>
     </div>
-  )
+  );
 }

@@ -1,13 +1,13 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { Button } from "@/components/ui/button"
-import { MessageCircle, X } from "lucide-react"
-import { ChatInterface } from "./chat-interface"
-import { cn } from "@/lib/utils"
+import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
+import { MessageCircle, X } from "lucide-react";
+import { useState } from "react";
+import { ChatInterface } from "./chat-interface";
 
 export function MobileChatFAB() {
-  const [isOpen, setIsOpen] = useState(false)
+  const [isOpen, setIsOpen] = useState(false);
 
   return (
     <>
@@ -19,7 +19,7 @@ export function MobileChatFAB() {
           "bg-blue-600 hover:bg-blue-700 text-white",
           "transition-all duration-300 ease-in-out",
           "glass-morphism border-2 border-white/30",
-          isOpen && "scale-0 opacity-0",
+          isOpen && "scale-0 opacity-0"
         )}
         size="icon"
       >
@@ -31,23 +31,33 @@ export function MobileChatFAB() {
       <div
         className={cn(
           "fixed inset-0 z-50 transition-all duration-300 ease-in-out",
-          isOpen ? "opacity-100 visible" : "opacity-0 invisible",
+          isOpen ? "opacity-100 visible" : "opacity-0 invisible"
         )}
       >
         {/* 背景オーバーレイ */}
-        <div
+        <button
+          type="button"
+          aria-label="チャットを閉じる"
           className={cn(
             "absolute inset-0 bg-black/20 backdrop-blur-sm transition-opacity duration-300",
-            isOpen ? "opacity-100" : "opacity-0",
+            isOpen ? "opacity-100" : "opacity-0"
           )}
           onClick={() => setIsOpen(false)}
+          onKeyDown={(e) => {
+            if (e.key === "Enter" || e.key === " ") {
+              e.preventDefault();
+              setIsOpen(false);
+            }
+          }}
+          tabIndex={isOpen ? 0 : -1}
+          style={{ border: "none", padding: 0, margin: 0 }}
         />
 
         {/* チャットウィンドウ */}
         <div
           className={cn(
             "absolute bottom-0 left-0 right-0 h-[80vh] transition-transform duration-300 ease-in-out",
-            isOpen ? "translate-y-0" : "translate-y-full",
+            isOpen ? "translate-y-0" : "translate-y-full"
           )}
         >
           <div className="h-full mx-2 mb-2 rounded-t-2xl overflow-hidden relative">
@@ -79,5 +89,5 @@ export function MobileChatFAB() {
         </div>
       )}
     </>
-  )
+  );
 }

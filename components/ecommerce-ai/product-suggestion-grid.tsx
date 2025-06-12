@@ -1,54 +1,56 @@
-"use client"
+"use client";
 
-import Image from "next/image"
-import { Button } from "@/components/ui/button"
-import { ShoppingBag, ChevronLeft, ChevronRight } from "lucide-react"
-import type { Product } from "@/lib/types"
-import { cn } from "@/lib/utils"
-import { useRef, useState, useEffect, useCallback } from "react"
+import { Button } from "@/components/ui/button";
+import type { Product } from "@/lib/types";
+import { cn } from "@/lib/utils";
+import { ChevronLeft, ChevronRight, ShoppingBag } from "lucide-react";
+import Image from "next/image";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 interface ProductSuggestionGridProps {
-  products: Product[]
-  isMobile?: boolean
+  products: Product[];
+  isMobile?: boolean;
 }
 
 export function ProductSuggestionGrid({ products, isMobile = false }: ProductSuggestionGridProps) {
-  const scrollContainerRef = useRef<HTMLDivElement>(null)
-  const [canScrollLeft, setCanScrollLeft] = useState(false)
-  const [canScrollRight, setCanScrollRight] = useState(false)
-
-  if (!products || products.length === 0) return null
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
+  const [canScrollLeft, setCanScrollLeft] = useState(false);
+  const [canScrollRight, setCanScrollRight] = useState(false);
 
   // スクロール状態をチェック
   const checkScrollButtons = useCallback(() => {
     if (scrollContainerRef.current) {
-      const { scrollLeft, scrollWidth, clientWidth } = scrollContainerRef.current
-      setCanScrollLeft(scrollLeft > 0)
-      setCanScrollRight(scrollLeft < scrollWidth - clientWidth - 1)
+      const { scrollLeft, scrollWidth, clientWidth } = scrollContainerRef.current;
+      setCanScrollLeft(scrollLeft > 0);
+      setCanScrollRight(scrollLeft < scrollWidth - clientWidth - 1);
     }
-  }, [])
+  }, []);
 
   useEffect(() => {
-    checkScrollButtons()
-    const container = scrollContainerRef.current
+    checkScrollButtons();
+    const container = scrollContainerRef.current;
     if (container) {
-      container.addEventListener("scroll", checkScrollButtons)
-      return () => container.removeEventListener("scroll", checkScrollButtons)
+      container.addEventListener("scroll", checkScrollButtons);
+      return () => container.removeEventListener("scroll", checkScrollButtons);
     }
-  }, [products, checkScrollButtons])
+  }, [products, checkScrollButtons]);
+
+  if (!products || products.length === 0) {
+    return null;
+  }
 
   // スクロール関数
   const scroll = (direction: "left" | "right") => {
     if (scrollContainerRef.current) {
-      const scrollAmount = isMobile ? 200 : 250
+      const scrollAmount = isMobile ? 200 : 250;
       const newScrollLeft =
-        scrollContainerRef.current.scrollLeft + (direction === "left" ? -scrollAmount : scrollAmount)
+        scrollContainerRef.current.scrollLeft + (direction === "left" ? -scrollAmount : scrollAmount);
       scrollContainerRef.current.scrollTo({
         left: newScrollLeft,
         behavior: "smooth",
-      })
+      });
     }
-  }
+  };
 
   return (
     <div className={cn("w-full relative", isMobile ? "mt-3" : "mt-2 lg:mt-3")}>
@@ -62,7 +64,7 @@ export function ProductSuggestionGrid({ products, isMobile = false }: ProductSug
             "bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm shadow-md",
             "hover:bg-white/90 dark:hover:bg-slate-700/90",
             "text-slate-700 dark:text-slate-200",
-            isMobile ? "h-8 w-8" : "h-7 w-7",
+            isMobile ? "h-8 w-8" : "h-7 w-7"
           )}
           onClick={() => scroll("left")}
         >
@@ -80,7 +82,7 @@ export function ProductSuggestionGrid({ products, isMobile = false }: ProductSug
             "bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm shadow-md",
             "hover:bg-white/90 dark:hover:bg-slate-700/90",
             "text-slate-700 dark:text-slate-200",
-            isMobile ? "h-8 w-8" : "h-7 w-7",
+            isMobile ? "h-8 w-8" : "h-7 w-7"
           )}
           onClick={() => scroll("right")}
         >
@@ -98,20 +100,20 @@ export function ProductSuggestionGrid({ products, isMobile = false }: ProductSug
           "[&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]",
           // パディングでスクロールボタンのスペースを確保
           canScrollLeft && "pl-10",
-          canScrollRight && "pr-10",
+          canScrollRight && "pr-10"
         )}
         style={{
           scrollSnapType: "x mandatory",
         }}
       >
-        {products.map((product, index) => (
+        {products.map((product, _index) => (
           <div
             key={product.id}
             className={cn(
               "flex-shrink-0 bg-white/20 dark:bg-white/10 backdrop-blur-md rounded-lg overflow-hidden",
               "border border-white/30 dark:border-white/10 transition-all hover:shadow-md",
               // カードの幅を固定
-              isMobile ? "w-40" : "w-36 lg:w-44",
+              isMobile ? "w-40" : "w-36 lg:w-44"
             )}
             style={{ scrollSnapAlign: "start" }}
           >
@@ -131,12 +133,13 @@ export function ProductSuggestionGrid({ products, isMobile = false }: ProductSug
               <div
                 className={cn(
                   "absolute top-1 right-1 bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm rounded font-medium text-slate-800 dark:text-slate-200",
-                  isMobile ? "px-2 py-1 text-xs" : "px-1.5 py-0.5 text-[10px] lg:text-xs",
+                  isMobile ? "px-2 py-1 text-xs" : "px-1.5 py-0.5 text-[10px] lg:text-xs"
                 )}
               >
-                {new Intl.NumberFormat("ja-JP", { style: "currency", currency: product.currency }).format(
-                  product.price,
-                )}
+                {new Intl.NumberFormat("ja-JP", {
+                  style: "currency",
+                  currency: product.currency,
+                }).format(product.price)}
               </div>
             </div>
 
@@ -145,7 +148,7 @@ export function ProductSuggestionGrid({ products, isMobile = false }: ProductSug
               <h4
                 className={cn(
                   "font-medium text-slate-800 dark:text-slate-100 line-clamp-1",
-                  isMobile ? "text-xs" : "text-[10px] lg:text-xs",
+                  isMobile ? "text-xs" : "text-[10px] lg:text-xs"
                 )}
                 title={product.name}
               >
@@ -154,7 +157,7 @@ export function ProductSuggestionGrid({ products, isMobile = false }: ProductSug
               <p
                 className={cn(
                   "text-slate-600 dark:text-slate-300 line-clamp-2 mt-0.5",
-                  isMobile ? "text-xs h-8" : "text-[9px] lg:text-[10px] h-6 lg:h-8",
+                  isMobile ? "text-xs h-8" : "text-[9px] lg:text-[10px] h-6 lg:h-8"
                 )}
                 title={product.description}
               >
@@ -165,7 +168,7 @@ export function ProductSuggestionGrid({ products, isMobile = false }: ProductSug
                   size="xs"
                   className={cn(
                     "bg-blue-600/80 hover:bg-blue-700/80 text-white rounded py-0",
-                    isMobile ? "h-6 text-xs px-2" : "h-5 lg:h-6 text-[9px] lg:text-[10px] px-1.5 lg:px-2",
+                    isMobile ? "h-6 text-xs px-2" : "h-5 lg:h-6 text-[9px] lg:text-[10px] px-1.5 lg:px-2"
                   )}
                   onClick={() => alert(`商品詳細: ${product.name}`)}
                 >
@@ -193,5 +196,5 @@ export function ProductSuggestionGrid({ products, isMobile = false }: ProductSug
         </div>
       )}
     </div>
-  )
+  );
 }
