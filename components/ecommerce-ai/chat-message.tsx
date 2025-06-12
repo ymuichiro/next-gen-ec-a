@@ -2,39 +2,53 @@ import type { Product } from "@/lib/types"
 import Image from "next/image"
 import { User, Bot } from "lucide-react"
 import { Button } from "@/components/ui/button"
+import { cn } from "@/lib/utils"
 
 interface Message {
   id: string
   sender: "user" | "ai"
   text: string
-  products?: Product[] // Optional: for AI product suggestions
+  products?: Product[]
   timestamp: Date
+  showAsGrid?: boolean
+  imageUrl?: string // 画像URLを追加
 }
 
 interface ChatMessageProps {
   message: Message
+  isMobile?: boolean
 }
 
-function ProductSuggestionCard({ product }: { product: Product }) {
+function ProductSuggestionCard({ product, isMobile = false }: { product: Product; isMobile?: boolean }) {
   return (
-    <div className="mt-2 p-3 border border-white/20 rounded-lg bg-white/10 backdrop-blur-sm hover:bg-white/20 transition-colors">
+    <div
+      className={cn(
+        "border border-white/20 dark:border-white/10 rounded-lg glass-morphism dark:glass-morphism-dark hover:bg-white/30 dark:hover:bg-white/10 transition-colors",
+        isMobile ? "mt-3 p-3" : "mt-2 p-3",
+      )}
+    >
       <div className="flex items-center gap-3">
         <Image
           src={product.imageUrl || `/placeholder.svg?width=60&height=60&query=${encodeURIComponent(product.name)}`}
           alt={product.name}
-          width={60}
-          height={60}
+          width={isMobile ? 70 : 60}
+          height={isMobile ? 70 : 60}
           className="rounded-md object-cover"
         />
         <div>
-          <h4 className="text-sm font-semibold text-slate-800 dark:text-slate-100">{product.name}</h4>
-          <p className="text-xs text-slate-600 dark:text-slate-300">
-            {new Intl.NumberFormat("en-US", { style: "currency", currency: product.currency }).format(product.price)}
+          <h4 className={cn("font-semibold text-slate-800 dark:text-slate-100", isMobile ? "text-sm" : "text-sm")}>
+            {product.name}
+          </h4>
+          <p className={cn("text-slate-600 dark:text-slate-300", isMobile ? "text-sm" : "text-xs")}>
+            {new Intl.NumberFormat("ja-JP", { style: "currency", currency: product.currency }).format(product.price)}
           </p>
           <Button
             size="xs"
             variant="outline"
-            className="mt-1 text-xs h-6 border-white/30 hover:bg-white/20 text-slate-700 dark:text-slate-200"
+            className={cn(
+              "border-blue-400/50 hover:bg-blue-400/20 text-blue-700 dark:text-blue-300 rounded-md backdrop-blur-sm",
+              isMobile ? "mt-2 text-sm h-7" : "mt-1 text-xs h-6",
+            )}
           >
             詳細を見る
           </Button>
@@ -44,35 +58,51 @@ function ProductSuggestionCard({ product }: { product: Product }) {
   )
 }
 
-export function ChatMessage({ message }: ChatMessageProps) {
+export function ChatMessage({ message, isMobile = false }: ChatMessageProps) {
   const isUser = message.sender === "user"
 
   return (
     <div className={`flex mb-4 ${isUser ? "justify-end" : "justify-start"}`}>
       <div
-        className={`flex items-start gap-2 max-w-[80%] p-3 rounded-xl
-          ${
-            isUser
-              ? "bg-sky-500/70 text-white rounded-br-none backdrop-blur-md border border-sky-400/50"
-              : "bg-white/50 dark:bg-slate-700/50 text-slate-800 dark:text-slate-100 rounded-bl-none backdrop-blur-md border border-white/30 dark:border-slate-600/50"
-          }`}
+        className={cn(
+          "flex items-start gap-2 max-w-[80%] rounded-xl shadow-md",
+          isUser
+            ? "bg-blue-600/80 text-white rounded-br-none backdrop-blur-md border border-blue-500/50"
+            : "glass-morphism dark:glass-morphism-dark text-slate-800 dark:text-slate-100 rounded-bl-none",
+          isMobile ? "p-3" : "p-3",
+        )}
       >
-        {isUser ? null : <Bot className="h-5 w-5 text-sky-500 dark:text-sky-400 flex-shrink-0 mt-0.5" />}
+        {isUser ? null : (
+          <Bot
+            className={cn("text-sky-600 dark:text-sky-400 flex-shrink-0 mt-0.5", isMobile ? "h-6 w-6" : "h-5 w-5")}
+          />
+        )}
         <div>
-          <p className="text-sm whitespace-pre-line">{message.text}</p>
-          {message.products && message.products.length > 0 && (
-            <div className="mt-3 space-y-2">
-              <h5 className="text-xs font-medium text-slate-700 dark:text-slate-200">おすすめ商品:</h5>
+          <p className={cn("whitespace-pre-line", isMobile ? "text-sm" : "text-sm")}>{message.text}</p>
+          {/* 画像が表示される場合 */}
+          {message.imageUrl && (
+            <div className="mt-2">
+              <Image
+                src={message.imageUrl || "/placeholder.svg"}
+                alt="添付画像"
+                width={200}
+                height={150}
+                className="rounded-lg object-cover max-w-full h-auto"
+              />
+            </div>
+          )}
+          {message.products && message.products.length > 0 && !message.showAsGrid && (
+            <div className="space-y-2">
               {message.products.map((product) => (
-                <ProductSuggestionCard key={product.id} product={product} />
+                <ProductSuggestionCard key={product.id} product={product} isMobile={isMobile} />
               ))}
             </div>
           )}
-          <p className="text-xs mt-1.5 opacity-70 text-right">
+          <p className={cn("opacity-70 text-right", isMobile ? "text-sm mt-2" : "text-xs mt-1.5")}>
             {message.timestamp.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
           </p>
         </div>
-        {isUser ? <User className="h-5 w-5 text-white flex-shrink-0 mt-0.5" /> : null}
+        {isUser ? <User className={cn("text-white flex-shrink-0 mt-0.5", isMobile ? "h-6 w-6" : "h-5 w-5")} /> : null}
       </div>
     </div>
   )
