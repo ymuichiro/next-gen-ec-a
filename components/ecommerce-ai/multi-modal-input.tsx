@@ -14,6 +14,7 @@ interface MultiModalInputProps {
   onFileSelect: (event: ChangeEvent<HTMLInputElement>) => void;
   onVoiceClick?: () => void;
   isSending?: boolean;
+  isRecording?: boolean;
 }
 
 export function MultiModalInput({
@@ -24,6 +25,7 @@ export function MultiModalInput({
   onFileSelect,
   onVoiceClick,
   isSending = false,
+  isRecording = false,
   attachments = [],
 }: MultiModalInputProps & { attachments?: string[]; }) {
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -33,7 +35,10 @@ export function MultiModalInput({
       {attachments && attachments.length > 0 && (
         <div className="flex gap-2 mb-1">
           {attachments.map((url, idx) => (
-            <div key={url} className="relative w-20 h-20 rounded overflow-hidden border border-slate-200 dark:border-slate-700 bg-white/40 dark:bg-slate-900/40">
+            <div
+              key={url}
+              className="relative w-20 h-20 rounded overflow-hidden border border-slate-200 dark:border-slate-700 bg-white/40 dark:bg-slate-900/40"
+            >
               <img
                 src={url}
                 alt={`添付画像${idx + 1}`}
@@ -45,7 +50,14 @@ export function MultiModalInput({
         </div>
       )}
       <div className={cn("flex items-center", isMobile ? "gap-3" : "gap-1 lg:gap-2")}>
-        <input type="file" ref={fileInputRef} onChange={onFileSelect} accept="image/*" className="hidden" disabled={isSending} />
+        <input
+          type="file"
+          ref={fileInputRef}
+          onChange={onFileSelect}
+          accept="image/*"
+          className="hidden"
+          disabled={isSending}
+        />
         <Button
           variant="ghost"
           size="icon"
@@ -60,17 +72,20 @@ export function MultiModalInput({
           <span className="sr-only">ファイルを添付</span>
         </Button>
         <Button
-          variant="ghost"
+          variant={isRecording ? "destructive" : "ghost"}
           size="icon"
           onClick={onVoiceClick}
           disabled={isSending}
           className={cn(
-            "text-blue-600 dark:text-blue-400 hover:bg-white/20 dark:hover:bg-white/10 rounded-full flex-shrink-0",
+            isRecording
+              ? "text-white dark:text-white bg-red-500 hover:bg-red-600 dark:bg-red-600 dark:hover:bg-red-700 animate-pulse"
+              : "text-blue-600 dark:text-blue-400 hover:bg-white/20 dark:hover:bg-white/10",
+            "rounded-full flex-shrink-0",
             isMobile ? "h-10 w-10" : "h-8 w-8 lg:h-10 lg:w-10"
           )}
         >
           <Mic className={cn(isMobile ? "h-5 w-5" : "h-4 w-4 lg:h-5 lg:w-5")} />
-          <span className="sr-only">音声入力</span>
+          <span className="sr-only">{isRecording ? "録音停止" : "音声入力"}</span>
         </Button>
         <Input
           type="text"
@@ -78,7 +93,14 @@ export function MultiModalInput({
           value={input}
           onChange={(e) => onInputChange(e.target.value)}
           onKeyDown={(e) => {
-            if (e.key === "Enter" && !isSending) {
+            // IME変換中はEnterで送信しない（isComposingだけでなくkeyCode=229も考慮）
+            // e.nativeEvent.keyCode === 229 は非推奨だが日本語IME対策として併用
+            if (
+              e.key === "Enter" &&
+              !isSending &&
+              !(e.nativeEvent as any).isComposing &&
+              (typeof (e.nativeEvent as any).keyCode !== "number" || (e.nativeEvent as any).keyCode !== 229)
+            ) {
               onSubmit();
             }
           }}

@@ -1,21 +1,12 @@
+"use client";
 import { Button } from "@/components/ui/button";
-import type { Product } from "@/lib/types";
+import type { ChatMessageModel, Product } from "@/lib/types";
 import { cn } from "@/lib/utils";
 import { Bot, User } from "lucide-react";
 import Image from "next/image";
 
-interface Message {
-  id: string;
-  sender: "user" | "ai";
-  text: string;
-  products?: Product[];
-  timestamp: Date;
-  showAsGrid?: boolean;
-  imageUrl?: string[];
-}
-
 interface ChatMessageProps {
-  message: Message;
+  message: ChatMessageModel;
   isMobile?: boolean;
 }
 
@@ -81,21 +72,22 @@ export function ChatMessage({ message, isMobile = false }: ChatMessageProps) {
           />
         )}
         <div>
-          <p className={cn("whitespace-pre-line", isMobile ? "text-sm" : "text-sm")}>{message.text}</p>
-          {/* 画像が表示される場合（複数対応） */}
-          {message.imageUrl && message.imageUrl.length > 0 && (
-            <div className="mt-2 flex flex-wrap gap-2">
-              {message.imageUrl.map((url, idx) => (
-                <Image
-                  key={url + idx}
-                  src={url || "/placeholder.svg"}
-                  alt="添付画像"
-                  width={200}
-                  height={150}
-                  className="rounded-lg object-cover max-w-full h-auto"
-                />
-              ))}
-            </div>
+          {/* content配列をループし、テキスト・画像を分岐表示 */}
+          {message.content.map((c, i) =>
+            c.type === "text" ? (
+              <p key={i} className={cn("whitespace-pre-line", isMobile ? "text-sm" : "text-sm")}>
+                {c.text}
+              </p>
+            ) : (
+              <Image
+                key={i}
+                src={c.imageUrl || "/placeholder.svg"}
+                alt="添付画像"
+                width={200}
+                height={150}
+                className="rounded-lg object-cover max-w-full h-auto mt-2"
+              />
+            )
           )}
           {message.products && message.products.length > 0 && !message.showAsGrid && (
             <div className="space-y-2">

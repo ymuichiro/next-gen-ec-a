@@ -15,17 +15,8 @@ interface ChatInterfaceProps {
 }
 
 export function ChatInterface({ isMobile = false }: ChatInterfaceProps) {
-  const {
-    messages,
-    input,
-    setInput,
-    isSending,
-    onSubmit,
-    handleFileSelect,
-    attachments,
-    resetChat,
-  } = useChatSubmit();
-  const { onVoiceClick } = useVoiceInput({ setInput });
+  const { messages, input, setInput, isSending, onSubmit, handleFileSelect, attachments, resetChat } = useChatSubmit();
+  const { onVoiceClick, isRecording } = useVoiceInput({ setInput });
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
@@ -69,7 +60,6 @@ export function ChatInterface({ isMobile = false }: ChatInterfaceProps) {
             >
               <MessageCirclePlus className={cn(isMobile ? "h-5 w-5" : "h-5 w-5 lg:h-5 lg:w-5")} />
             </Button>
-
           </div>
         </div>
       </header>
@@ -87,7 +77,9 @@ export function ChatInterface({ isMobile = false }: ChatInterfaceProps) {
                 )}
               >
                 <div className="w-full min-w-0">
-                  <p className="text-sm whitespace-pre-line mb-2">{msg.text}</p>
+                  <p className="text-sm whitespace-pre-line mb-2">
+                    {msg.content.find((c) => c.type === "text")?.text ?? ""}
+                  </p>
                   <ProductSuggestionGrid products={msg.products || []} isMobile={isMobile} />
                   <p className="text-xs mt-1.5 opacity-70 text-right">
                     {msg.timestamp.toLocaleTimeString([], {
@@ -115,7 +107,8 @@ export function ChatInterface({ isMobile = false }: ChatInterfaceProps) {
           onFileSelect={handleFileSelect}
           onVoiceClick={onVoiceClick}
           isSending={isSending}
-          attachments={attachments}
+          isRecording={isRecording}
+          attachments={attachments.filter((a) => a.type === "image").map((a) => a.imageUrl)}
         />
       </footer>
     </div>

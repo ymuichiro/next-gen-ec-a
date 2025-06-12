@@ -1,34 +1,30 @@
+import type { ChatContent, ChatMessageModel } from "@/lib/types";
 import { useState } from "react";
 import { toast } from "sonner";
 
-export interface Message {
-  id: string;
-  sender: "user" | "ai";
-  text: string;
-  products?: any[];
-  timestamp: Date;
-  showAsGrid?: boolean;
-  imageUrl?: string[];
-}
-
 export function useChatSubmit() {
-  const [messages, setMessages] = useState<Message[]>([
+  const [messages, setMessages] = useState<ChatMessageModel[]>([
     {
       id: "initial-ai-message",
-      sender: "ai",
-      text: "こんにちは！ AIショッピングアシスタントです。どのようなお手伝いができますか？",
+      sender: "assistant",
+      content: [
+        {
+          type: "text" as const,
+          text: "こんにちは！ AIショッピングアシスタントです。どのようなお手伝いができますか？",
+        },
+      ],
       timestamp: new Date(),
     },
   ]);
   const [input, setInput] = useState<string>("");
-  const [attachments, setAttachments] = useState<string[]>([]);
+  const [attachments, setAttachments] = useState<ChatContent[]>([]);
   const [isSending, setIsSending] = useState(false);
 
   // チャットリセット用の初期メッセージ
-  const initialMessage: Message = {
+  const initialMessage: ChatMessageModel = {
     id: "initial-ai-message",
-    sender: "ai",
-    text: "こんにちは！ AIショッピングアシスタントです。どのようなお手伝いができますか？",
+    sender: "assistant",
+    content: [{ type: "text", text: "こんにちは！ AIショッピングアシスタントです。どのようなお手伝いができますか？" }],
     timestamp: new Date(),
   };
 
@@ -77,7 +73,7 @@ export function useChatSubmit() {
         return;
       }
 
-      setAttachments((prev) => [...prev, uploadUrl]);
+      setAttachments((prev) => [...prev, { type: "image", imageUrl: uploadUrl, mimeType: file.type }]);
       event.target.value = "";
     } catch {
       toast.error("ファイルのアップロードに失敗しました");
@@ -96,11 +92,10 @@ export function useChatSubmit() {
       return;
     }
     setIsSending(true);
-    const newMessage: Message = {
+    const newMessage: ChatMessageModel = {
       id: `user-${Date.now()}`,
       sender: "user",
-      text: input || (attachments.length > 0 ? "画像を送信しました。" : ""),
-      imageUrl: attachments.length > 0 ? [...attachments] : undefined,
+      content: [...(input ? [{ type: "text" as const, text: input }] : []), ...attachments],
       timestamp: new Date(),
     };
     setMessages((prev) => [...prev, newMessage]);
@@ -109,8 +104,7 @@ export function useChatSubmit() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          attachments,
-          timestamp: newMessage.timestamp,
+          messages: [...messages, newMessage],
         }),
       });
       if (!res.ok) {
@@ -124,10 +118,9 @@ export function useChatSubmit() {
           ...prev,
           {
             id: `ai-${Date.now()}`,
-            sender: "ai",
-            text: data.text ?? "",
+            sender: "assistant",
+            content: data.text ? [{ type: "text" as const, text: data.text }] : [],
             products: data.products,
-            imageUrl: data.products?.imageUrl ? [data.products.imageUrl] : undefined,
             timestamp: new Date(),
           },
         ]);
@@ -164,6 +157,6 @@ export function useChatSubmit() {
     onSubmit,
     isSending,
     handleFileSelect,
-    resetChat, // 追加
+    resetChat,
   };
 }

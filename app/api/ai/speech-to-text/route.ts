@@ -3,66 +3,51 @@ import { env } from "@/lib/config";
 import { logger } from "@/lib/logger";
 import type { NextRequest } from "next/server";
 
-// Azure Speech REST APIエンドポイント
-const SPEECH_ENDPOINT = `https://${env.AZURE_SPEECH_REGION}.api.cognitive.microsoft.com/speechtotext/v3.0/transcriptions`;
+const MAX_AUDIO_SIZE: number = 10 * 1024 * 1024;
+const STT_API_VERSION: string = "2024-11-15";
 
-export const POST = withApiHandler(async (req: NextRequest) => {
-  const { blobUrl, fileName } = await req.json();
-  if (!blobUrl) {
-    throw createApiError("blobUrl is required", 400);
+export const POST = withApiHandler(async (request: NextRequest, user) => {
+  if (!user) {
+    throw createApiError("Unauthorized", 401);
   }
+  const audioBuffer: ArrayBuffer = await request.arrayBuffer();
+  if (audioBuffer.byteLength > MAX_AUDIO_SIZE) {
+    logger.error("[STT] Audio file too large");
+    throw createApiError("Audio file too large", 413);
+  }
+  const key: string | undefined = env.AZURE_SPEECH_KEY;
+  const region: string | undefined = env.AZURE_SPEECH_REGION;
+  if (!key || !region) {
+    logger.error("[STT] Missing Azure Speech key or region");
+    throw createApiError("Azure Speech key or region is not set", 500);
+  }
+  const endpoint: URL = new URL(
+    "/speechtotext/transcriptions:transcribe",
+    `https://${region}.api.cognitive.microsoft.com`
+  );
+  endpoint.searchParams.set("api-version", STT_API_VERSION);
 
-  // Azure Speech API でバッチ音声認識ジョブ作成
-  const transcriptionReq = await fetch(SPEECH_ENDPOINT, {
+  // ロケールはja-JPで固定
+  const locale = "ja-JP";
+  const formData: FormData = new FormData();
+  formData.append("audio", new Blob([audioBuffer], { type: "audio/wav" }), "audio.wav");
+  formData.append("definition", JSON.stringify({ locales: [locale] }));
+
+  const res: Response = await fetch(endpoint.toString(), {
     method: "POST",
     headers: {
-      "Ocp-Apim-Subscription-Key": env.AZURE_SPEECH_KEY,
-      "Content-Type": "application/json",
+      "Ocp-Apim-Subscription-Key": key,
     },
-    body: JSON.stringify({
-      contentUrls: [blobUrl],
-      locale: "ja-JP",
-      displayName: fileName || `voice-${Date.now()}`,
-      properties: { diarizationEnabled: false },
-    }),
+    body: formData as any,
   });
-  if (!transcriptionReq.ok) {
-    logger.error(await transcriptionReq.text(), "Failed to create speech transcription job");
-    throw createApiError("Failed to create speech transcription job", 500);
-  }
-  // LocationヘッダーからジョブURL取得
-  const jobUrl = transcriptionReq.headers.get("location");
-  if (!jobUrl) {
-    throw createApiError("No job location returned", 500);
+
+  if (!res.ok) {
+    const errorText = await res.text();
+    logger.error(new Error(errorText), "[STT] Azure error");
+    throw createApiError("Azure Speech API error", 500);
   }
 
-  // ジョブ完了までポーリング
-  let status = "";
-  let resultUrls: string[] = [];
-  for (let i = 0; i < 30; i++) {
-    // 最大30回(約60秒)
-    await new Promise((r) => setTimeout(r, 2000));
-    const statusRes = await fetch(jobUrl, {
-      headers: { "Ocp-Apim-Subscription-Key": env.AZURE_SPEECH_KEY },
-    });
-    const statusJson = await statusRes.json();
-    status = statusJson.status;
-    if (status === "Succeeded") {
-      resultUrls = statusJson.resultsUrls?.transcriptionFiles ? [statusJson.resultsUrls.transcriptionFiles] : [];
-      break;
-    }
-    if (status === "Failed") {
-      logger.error(statusJson, "Speech transcription job failed");
-      throw createApiError("Speech transcription job failed", 500);
-    }
-  }
-  if (status !== "Succeeded" || resultUrls.length === 0) {
-    throw createApiError("Speech transcription did not complete in time", 504);
-  }
-
-  // 結果ファイル(JSON)を取得しテキスト抽出
-  const resultRes = await fetch(resultUrls[0]);
-  const resultJson = await resultRes.json();
-  const text = resultJson.values?.[0]?.combinedRecognizedPhrases?.[0]?.display ?? "";
-  return { text };
+  const payload: any = await res.json();
+  const transcript: string = payload.combinedPhrases?.map((p: any) => p.text).join(" ") || "";
+  return { transcript };
 });

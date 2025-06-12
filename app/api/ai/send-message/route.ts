@@ -1,6 +1,6 @@
 import { parseEasyAuthHeader } from "@/lib/auth";
 import { logAccess, logger } from "@/lib/logger";
-import { NextRequest } from "next/server";
+import type { NextRequest } from "next/server";
 
 export async function POST(request: NextRequest) {
   const user = parseEasyAuthHeader(request.headers);

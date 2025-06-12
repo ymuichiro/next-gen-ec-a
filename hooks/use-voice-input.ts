@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import { toast } from "sonner";
 
 type UseVoiceInputProps = {
@@ -11,10 +11,18 @@ export function useVoiceInput({ setInput }: UseVoiceInputProps) {
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const audioChunksRef = useRef<Blob[]>([]);
   const isRecordingRef = useRef(false);
+  const [isRecording, setIsRecording] = useState(false);
+
+  const stopRecording = () => {
+    if (mediaRecorderRef.current && mediaRecorderRef.current.state === "recording") {
+      mediaRecorderRef.current.stop();
+      // stopイベントハンドラーで残りの処理を行うため、ここでは何もしない
+    }
+  };
 
   const onVoiceClick = async () => {
     if (isRecordingRef.current) {
-      toast("録音中です。しばらくお待ちください。");
+      stopRecording();
       return;
     }
     try {
@@ -22,6 +30,7 @@ export function useVoiceInput({ setInput }: UseVoiceInputProps) {
       const recorder = new MediaRecorder(stream);
       audioChunksRef.current = [];
       isRecordingRef.current = true;
+      setIsRecording(true);
       toast("録音開始。話しかけてください…");
       recorder.ondataavailable = (e) => {
         if (e.data.size > 0) {
@@ -30,6 +39,7 @@ export function useVoiceInput({ setInput }: UseVoiceInputProps) {
       };
       recorder.onstop = async () => {
         isRecordingRef.current = false;
+        setIsRecording(false);
         for (const t of stream.getTracks()) {
           t.stop();
         }
@@ -78,9 +88,15 @@ export function useVoiceInput({ setInput }: UseVoiceInputProps) {
       }, 30000);
     } catch {
       isRecordingRef.current = false;
+      setIsRecording(false);
       toast("マイクの利用や音声認識でエラーが発生しました");
     }
   };
 
-  return { onVoiceClick, isRecordingRef };
+  return {
+    onVoiceClick,
+    stopRecording,
+    isRecording,
+    isRecordingRef,
+  };
 }

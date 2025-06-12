@@ -36,3 +36,15 @@ export interface SimilarProductSuggestion {
   description: string;
   imageUrl?: string; // Optional, AI might not always provide this
 }
+
+// --- 新しいチャット構造体 ---
+export type ChatContent = { type: "text"; text: string } | { type: "image"; imageUrl: string; mimeType?: string };
+
+export interface ChatMessageModel {
+  id: string;
+  sender: "user" | "assistant";
+  content: ChatContent[];
+  timestamp: Date;
+  products?: any[];
+  showAsGrid?: boolean;
+}
