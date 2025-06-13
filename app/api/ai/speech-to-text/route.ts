@@ -30,7 +30,7 @@ export const POST = withApiHandler(async (request: NextRequest, user) => {
   // ロケールはja-JPで固定
   const locale = "ja-JP";
   const formData: FormData = new FormData();
-  formData.append("audio", new Blob([audioBuffer], { type: "audio/wav" }), "audio.wav");
+  formData.append("audio", new Blob([audioBuffer], { type: "audio/webm" }), "audio.webm");
   formData.append("definition", JSON.stringify({ locales: [locale] }));
 
   const res: Response = await fetch(endpoint.toString(), {

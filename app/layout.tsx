@@ -1,6 +1,8 @@
 import { AppHeader } from "@/components/ecommerce-ai/app-header"; // AppHeaderをインポート
 import type { Metadata } from "next";
 import type React from "react";
+import { Toaster } from 'sonner';
+
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -20,8 +22,7 @@ export default function RootLayout({
         {/* 背景スタイルを適用 */}
         <AppHeader /> {/* AppHeaderを配置 */}
         <main className="pt-14 lg:pt-16">
-          {" "}
-          {/* ヘッダーの高さ分パディングを追加 */}
+          <Toaster position="top-center" />
           {children}
         </main>
       </body>

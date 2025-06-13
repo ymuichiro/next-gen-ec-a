@@ -44,38 +44,19 @@ export function useVoiceInput({ setInput }: UseVoiceInputProps) {
           t.stop();
         }
         toast("録音終了。音声を解析中…");
-        const audioBlob = new Blob(audioChunksRef.current, { type: "audio/webm" });
-        const fileName = `voice-${Date.now()}.webm`;
-        const res = await fetch("/api/ai/blob-upload-url", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ fileName, contentType: "audio/webm" }),
-        });
-        if (!res.ok) {
-          throw new Error("アップロードURL取得失敗");
-        }
-        const { url } = await res.json();
-        const putRes = await fetch(url, {
-          method: "PUT",
-          headers: { "x-ms-blob-type": "BlockBlob", "Content-Type": "audio/webm" },
-          body: audioBlob,
-        });
-        if (!putRes.ok) {
-          throw new Error("音声ファイルのアップロード失敗");
-        }
         const sttRes = await fetch("/api/ai/speech-to-text", {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ blobUrl: url.split("?")[0], fileName }),
+          body: new Blob(audioChunksRef.current, { type: "audio/webm" }),
         });
         if (!sttRes.ok) {
           throw new Error("音声認識に失敗しました");
         }
-        const { text } = await sttRes.json();
-        if (!text) {
+        const { transcript } = await sttRes.json();
+        console.log("音声認識結果:", transcript);
+        if (!transcript) {
           toast("音声が認識できませんでした");
         } else {
-          setInput(text);
+          setInput(transcript);
           toast("音声認識が完了しました");
         }
       };
