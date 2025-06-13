@@ -39,21 +39,17 @@ cd <repository-directory>
 ### 2. 依存関係のインストール
 
 \`\`\`bash
-npm install
+pnpm install
 \`\`\`
 
 ### 3. 環境変数の設定
 
 プロジェクトのルートディレクトリに `.env.local` という名前のファイルを作成します。このファイルにOpenAIのAPIキーを設定してください。これは「類似商品を検索」機能で必要になります。
 
-\`\`\`.env.local
-OPENAI_API_KEY="your_openai_api_key_here"
-\`\`\`
-
 ### 4. 開発サーバーの起動
 
 \`\`\`bash
-npm run dev
+pnpm run dev
 \`\`\`
 
 ブラウザで [http://localhost:3000](http://localhost:3000) を開くと、アプリケーションが表示されます。
